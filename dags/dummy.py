@@ -2,9 +2,14 @@ from airflow import DAG
 from airflow.operators.python import PythonOperator, BranchPythonOperator
 from airflow.operators.bash import BashOperator
 
+# Check variables
+from airflow.models import Variable
+
 from random import randint
 from datetime import datetime
 
+
+pod_name = Variable.get("HOSTNAME", default_var="BAD VALUE")
 
 def _choose_best_model(ti):
     accuracies = ti.xcom_pull(task_ids=[
@@ -19,6 +24,7 @@ def _choose_best_model(ti):
 
 
 def _training_model():
+    print(pod_name)
     return randint(1, 10)
 
 

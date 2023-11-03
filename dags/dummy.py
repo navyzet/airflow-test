@@ -9,7 +9,7 @@ from random import randint
 from datetime import datetime
 
 
-pod_name = Variable.get("HOSTNAME", default_var="BAD VALUE")
+pod_name = Variable.get("FOO", default_var="BAD VALUE")
 
 def _choose_best_model(ti):
     accuracies = ti.xcom_pull(task_ids=[

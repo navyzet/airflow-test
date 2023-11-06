@@ -6,6 +6,7 @@ default_args = {
     'owner': 'your_name',
     'depends_on_past': False,
     'retries': 1,
+    'start_date': None
 }
 
 pod_args = [Variable.get("HOSTNAME", default_var="BAD VALUE")]

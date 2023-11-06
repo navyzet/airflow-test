@@ -1,12 +1,13 @@
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from airflow.models import Variable
+from airflow.utils.dates import days_ago
 
 default_args = {
     'owner': 'your_name',
+    'start_date': days_ago(1),
     'depends_on_past': False,
     'retries': 1,
-    'start_date': None
 }
 
 pod_args = [Variable.get("HOSTNAME", default_var="BAD VALUE")]

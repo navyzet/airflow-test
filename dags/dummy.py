@@ -8,6 +8,7 @@ from airflow.models import Variable
 from random import randint
 from datetime import datetime
 
+from kubernetes.client import models as k8s
 
 pod_name = Variable.get("FOO", default_var="BAD VALUE")
 
@@ -32,7 +33,27 @@ with DAG("my_dag", start_date=datetime(2021, 1, 1),
          schedule_interval="@daily", catchup=False) as dag:
     training_model_A = PythonOperator(
         task_id="training_model_A",
-        python_callable=_training_model
+        python_callable=_training_model,
+        executor_config = {
+            "pod_override": k8s.V1Pod(
+                spec=k8s.V1PodSpec(
+                    containers=[
+                        k8s.V1Container(
+                            name="base",
+                            resources=k8s.V1ResourceRequirements(
+                                requests={
+                                    "cpu": "100m",
+                                    "memory": "256Mi"
+                                },
+                                limits={
+                                    "memory": "420Mi"
+                                }
+                            )
+                        )
+                    ]
+                )
+            )
+        }
     )
 
     training_model_B = PythonOperator(

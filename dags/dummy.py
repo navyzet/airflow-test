@@ -29,8 +29,30 @@ def _training_model():
     return randint(1, 10)
 
 
+
 with DAG("my_dag", start_date=datetime(2021, 1, 1),
          schedule_interval="@daily", catchup=False) as dag:
+    executor_config_template = {
+        "pod_override": k8s.V1Pod(
+            spec=k8s.V1PodSpec(
+                containers=[
+                    k8s.V1Container(
+                        name="base",
+                        resources=k8s.V1ResourceRequirements(
+                            requests={
+                                "cpu": "50m",
+                                "memory": "128Mi"
+                            },
+                            limits={
+                                "cpu": "50m",
+                                "memory": "256Mi"
+                            }
+                        )
+                    )
+                ]
+            )
+        )
+    }
     training_model_A = PythonOperator(
         task_id="training_model_A",
         python_callable=_training_model,
@@ -46,7 +68,7 @@ with DAG("my_dag", start_date=datetime(2021, 1, 1),
                                     "memory": "256Mi"
                                 },
                                 limits={
-                                    "memory": "420Mi"
+                                    "memory": "256Mi"
                                 }
                             )
                         )

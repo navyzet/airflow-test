@@ -28,7 +28,7 @@ def _training_model():
     print(pod_name)
     return randint(1, 10)
 
-def resource_configure(mem_request, cpu_request, mem_limit, cpu_limit ):
+def resource_configure(mem_request=None, cpu_request=None, mem_limit=None, cpu_limit=None ):
     resource_limits = {}
     resource_requests = {}
     if mem_limit is not None:

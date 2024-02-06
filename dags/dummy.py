@@ -28,54 +28,42 @@ def _training_model():
     print(pod_name)
     return randint(1, 10)
 
-
-
-with DAG("my_dag", start_date=datetime(2021, 1, 1),
-         schedule_interval="@daily", catchup=False) as dag:
-    executor_config_template = {
+def resource_configure(mem_request, cpu_request, mem_limit, cpu_limit ):
+    resource_limits = {}
+    resource_requests = {}
+    if mem_limit is not None:
+        resource_limits["memory"] = mem_limit
+    if cpu_limit is not None:
+        resource_limits["cpu"] = cpu_limit
+    if mem_request is not None:
+        resource_requests["memory"] = mem_request
+    if cpu_request is not None:
+        resource_requests["cpu"] = cpu_request
+    return_executor_config_template = {
         "pod_override": k8s.V1Pod(
             spec=k8s.V1PodSpec(
                 containers=[
                     k8s.V1Container(
                         name="base",
                         resources=k8s.V1ResourceRequirements(
-                            requests={
-                                "cpu": "50m",
-                                "memory": "128Mi"
-                            },
-                            limits={
-                                "cpu": "50m",
-                                "memory": "256Mi"
-                            }
+                            requests = resource_requests,
+                            limits = resource_limits
                         )
                     )
                 ]
             )
         )
     }
+    return return_executor_config_template
+
+with (DAG("my_dag", start_date=datetime(2021, 1, 1),
+         schedule_interval="@daily", catchup=False) as dag):
+    executor_config_template = resource_configure(mem_request="128Mi", cpu_request="50m", mem_limit="256Mi")
     training_model_A = PythonOperator(
         task_id="training_model_A",
         python_callable=_training_model,
-        executor_config = {
-            "pod_override": k8s.V1Pod(
-                spec=k8s.V1PodSpec(
-                    containers=[
-                        k8s.V1Container(
-                            name="base",
-                            resources=k8s.V1ResourceRequirements(
-                                requests={
-                                    "cpu": "100m",
-                                    "memory": "256Mi"
-                                },
-                                limits={
-                                    "memory": "256Mi"
-                                }
-                            )
-                        )
-                    ]
-                )
-            )
-        }
+        executor_config = resource_configure(mem_request="256Mi", cpu_request="100m",
+                                             mem_limit="400Mi", cpu_limit="200m")
     )
 
     training_model_B = PythonOperator(

@@ -33,6 +33,7 @@ task = KubernetesPodOperator(
     labels={"app": "myapp"},
     get_logs=True,
     dag=dag,
+    kubernetes_conn_id=old,
     # service_account_name='airflow-service-account',
 )
 

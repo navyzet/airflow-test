@@ -3,7 +3,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 from airflow.models import Variable
 from airflow.utils.dates import days_ago
 from utils.const import ImageName
-from exness_airflow.types import Image
+# from exness_airflow.types import Image
 
 default_args = {
     'owner': 'your_name',
@@ -26,7 +26,7 @@ task = KubernetesPodOperator(
     task_id='run_kubernetes_pod_task',
     name='run-k8s-pod-task',
     namespace='airflow',  # Change to your desired Kubernetes namespace
-    image=Image(ImageName.COMMON_TAG),  # Specify the Docker image to run in the pod
+    image="ubuntu",  # Specify the Docker image to run in the pod
     cmds=["echo"],
     # arguments=["Hello, Airflow!"],  # Command and arguments to run in the pod
     arguments=pod_args,  # Command and arguments to run in the pod

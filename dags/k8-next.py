@@ -31,6 +31,7 @@ task = KubernetesPodOperator(
     labels={"app": "myapp"},
     get_logs=True,
     dag=dag,
+    pod_template_file='/opt/airflow/pod_templates/pod_template_file.yaml',
     # kubernetes_conn_id="old",
     # service_account_name='airflow-service-account',
 )

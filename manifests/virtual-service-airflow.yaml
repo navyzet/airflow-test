@@ -1,0 +1,36 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: internal-default
+  namespace: kube-istio-gateway
+spec:
+  selector:
+    istio: internal-default
+  servers:
+    - hosts:
+        - '*'
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: airflow
+  namespace: airflow
+spec:
+  gateways:
+  - kube-istio-gateway/internal-default
+  hosts:
+  - "*"
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: airflow-webserver
+        port:
+          number: 8080

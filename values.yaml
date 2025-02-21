@@ -1,4 +1,6 @@
-# Git sync
+dagProcessor:
+  enabled: true
+executor: "KubernetesExecutor"
 dags:
   gitSync:
     enabled: true
@@ -17,3 +19,7 @@ dags:
       requests:
        cpu: 100m
        memory: 128Mi
+redis:
+  enabled: false
+triggerer:
+  enabled: false
